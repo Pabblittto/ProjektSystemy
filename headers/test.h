@@ -1,3 +1,3 @@
 #include<stdio.h>
 
-void pisanie();
+void pisanie();// tu piszesz deklaracje funkcji
