@@ -4,6 +4,7 @@
 int main(){
 
 pisanie();
+//elo
 
 
 return 0;
