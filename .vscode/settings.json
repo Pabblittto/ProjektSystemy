@@ -1,5 +1,8 @@
 {
     "files.associations": {
-        "start.h": "c"
+        "start.h": "c",
+        "errno.h": "c",
+        "types.h": "c",
+        "stdio.h": "c"
     }
 }
