@@ -1,0 +1,1 @@
+#include "../headers/Start.h"// biblioteka z funkcjami, które sprawdzają czy istnieje dany katalog itd
