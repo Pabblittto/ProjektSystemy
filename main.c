@@ -4,7 +4,7 @@
 int main(){
 
 pisanie();
-//elo
+//kolejne dodawnaie commita, witam 
 
 
 return 0;
