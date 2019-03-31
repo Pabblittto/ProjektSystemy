@@ -63,6 +63,7 @@ CONFIG CheckDirectories(int ArgNum,char* List[])
                 DIR* tmp=opendir(firstDir);
                 if (tmp==NULL) {// didnt found directory
                     printf("Wrong first directory path!\n");
+                    printf("%s\n",strerror(errno));
                     exit(1);
                 }
             }

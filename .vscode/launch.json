@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "/home/pabblo/Desktop/Projekt/SystemyProjekt/exeFiles/programDeb",
-            "args": ["-t","35","/home/pabblo/Desktop/Projekt/SystemyProjekt/exeFile/pierwszy/","/home/pabblo/Desktop/Projekt/SystemyProjekt/exeFiles/drugi/"],
+            "args": ["-t","35","/home/pabblo/Desktop/Projekt/SystemyProjekt/exeFiles/pierwszy/","/home/pabblo/Desktop/Projekt/SystemyProjekt/exeFiles/drugi/"],
             "stopAtEntry": false,
             "cwd": "/home/pabblo/Desktop/Projekt/SystemyProjekt/exeFiles/",
             "environment": [],

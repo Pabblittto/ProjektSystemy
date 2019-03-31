@@ -3,6 +3,7 @@
         "start.h": "c",
         "errno.h": "c",
         "types.h": "c",
-        "stdio.h": "c"
+        "stdio.h": "c",
+        "files.h": "c"
     }
 }

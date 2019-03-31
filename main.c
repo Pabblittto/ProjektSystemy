@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include"headers/test.h"// tu doajesz headera i ditara siema 
-#include "headers/Start.h"
+#include"headers/Start.h"
+#include"headers/Files.h"
 
 
 
@@ -15,6 +16,8 @@ CONFIG Values;
 Values=CheckDirectories(ArgNum,Arg);
 printf("Wartosci to :\n");
 printf("%s pierwsze, %s drugie, %d czas,%d synchronizacja,%d rozmiar\n",(Values).FirstDir,(Values).SecondDir,(Values).time_wait,(Values).deepSynch,(Values).FileSize);
+
+ScanDirectory(Values.FirstDir);
 
 
 return 0;
