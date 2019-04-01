@@ -4,8 +4,10 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <utime.h>
 
-char** ScanDirectory(char* Directory)
+
+OBJECTLIST* ScanDirectory(char* Directory)
 {
     DIR* DirPointer=opendir(Directory);
 
@@ -24,8 +26,7 @@ char** ScanDirectory(char* Directory)
     long int tmpDate;
     unsigned long tmpsize;
 
-    struct stat* tmpStatObj;
-
+    struct stat tmpStatObj;
 
 
     while((tmp=readdir(DirPointer))!=NULL)// read all objects in directory
@@ -49,36 +50,27 @@ char** ScanDirectory(char* Directory)
 
             if(tmptype==0) // when its anything than directory- check its size and last modyfing date
             {
-                stat(tmppath,tmpStatObj);
-                tmpsize=tmpStatObj->st_size;
-                tmpDate=tmpStatObj->st_mtime;
+                stat(tmppath,&tmpStatObj);
+                tmpsize=tmpStatObj.st_size;
+                tmpDate=tmpStatObj.st_mtime;
                 // dobrz trzeba ustalić jak przekonwetowac ten czas na cza utime(...) bo nie działa, coś to moze byc zwiazane z Timestamp, trzeba to ogarnac 
-
             }
             else
             {
-                
+                tmpsize=0;
+                tmpDate=0;
             }
             
-            
-
-
-
-
-
-
-
-
-            
+            Add(List,tmppath,tmptype,tmpDate,tmpsize); // add object to list 
         }
         
     }
-                                              // TRZEBA ZIGNOROWAC PLIKI .. I . BO TO TEZ JEST POKAZYWANE
 
+    return List;
 }
 
 
-void Add(OBJECTLIST* first,char* path,int type,char* date,unsigned long size )
+void Add(OBJECTLIST* first,char* path,int type,long int date,unsigned long size )
 {
     if(first=NULL){// there is no elements in list
     first= malloc(sizeof(OBJECTLIST));
@@ -97,4 +89,84 @@ void Add(OBJECTLIST* first,char* path,int type,char* date,unsigned long size )
     first->path=path;
     first->type=type;
     first->size=size;
+}
+
+OBJECTLIST* Find(OBJECTLIST* List, char* path,int type)
+{
+    OBJECTLIST* result=NULL;
+
+    while(List!=NULL){
+        if(strcmp(List->path,path)==0 && List->type==type)// if there is an object with the same type and name path
+        {
+            result=List;
+            return result;
+        }
+        else
+        {
+            List=List->next;
+        }
+    }
+    return result;
+}
+
+char* NameOfElement(char* path)
+{
+    char result[256]="";
+    int end=0;// if
+    int iterator=1;
+    int lenght=strlen(path);
+
+    if(path[lenght-1]=='/')
+    iterator=2;
+    char znak;
+
+    while( path[lenght-iterator]!='/' ){
+        znak=path[lenght-iterator];
+
+        strcat(result,&znak);
+        iterator++;
+    }// this name is reversed
+        
+    strrev(result);
+
+    return result;
+}
+
+
+void CopyFiles(char* FirstDir,char* SecondDir,int IfDeepSynch)
+{
+OBJECTLIST* FilesInFirst=ScanDirectory(FirstDir);
+OBJECTLIST* FilesInSecond=ScanDirectory(SecondDir);
+
+OBJECTLIST* tmp;// tmp pointer for copying
+
+    while(FilesInFirst!=NULL){
+
+        if(FilesInFirst->type==1 && IfDeepSynch==1)// if its directory and recursive mode is on
+        {
+            if(tmp=Find(FilesInSecond,FilesInFirst->path,FilesInFirst->type)!=NULL)// file of directory exists
+            {
+               CopyFiles(FilesInFirst->path,tmp->path,IfDeepSynch);
+            }
+            else
+            {               // one need to create this folder
+                char* tmpName= malloc(sizeof(char)*(strlen(SecondDir)+strlen(FilesInFirst->path)-strlen(FirstDir)));// create place for its name
+                // tu trzeba zrobic pojebane działania na stringu, który połączy Seconddir + "nazwa kolejnego katalogu"
+
+                mkdir(tmpName,S_IRWXU|S_IRWXG|S_IROTH);// create folder !!
+
+            }
+            
+        }
+        else// if this is a normal file
+        {
+            /* code */
+        }
+        
+
+
+
+        FilesInFirst=FilesInFirst->next;// move to next object 
+    }
+
 }

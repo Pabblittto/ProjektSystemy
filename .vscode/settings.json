@@ -4,6 +4,7 @@
         "errno.h": "c",
         "types.h": "c",
         "stdio.h": "c",
-        "files.h": "c"
+        "files.h": "c",
+        "dirent.h": "c"
     }
 }

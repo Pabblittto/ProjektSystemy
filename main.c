@@ -10,15 +10,19 @@ int main(int ArgNum,char* Arg[] )
             // ogólnie zzynchronizować dwa foldery
             // trzeba ogarnąć logi do systemu Barto :3 
             // funkja, która potrafi skanować folder i robi liste plików + czas utworzenia tych plików ..... nooo ostro może być
-
+OBJECTLIST* pointer;
 
 CONFIG Values;
 Values=CheckDirectories(ArgNum,Arg);
 printf("Wartosci to :\n");
 printf("%s pierwsze, %s drugie, %d czas,%d synchronizacja,%d rozmiar\n",(Values).FirstDir,(Values).SecondDir,(Values).time_wait,(Values).deepSynch,(Values).FileSize);
 
-ScanDirectory(Values.FirstDir);
+pointer=ScanDirectory(Values.FirstDir);
 
+
+char* teskt= NameOfElement("siemaneczko/katalog/");
+
+printf("asd");
 
 return 0;
 }

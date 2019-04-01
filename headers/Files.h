@@ -15,14 +15,19 @@ typedef struct Object{// object from directory
     char* path;     // path to this certain 
     int type;       // 0-its normal file
                     // 1 -its directory
-    char* date;     //date of created object
+    long int date;     //date of created object
     struct Object* next;// pointer to next object
     long size;      // size of the file, if it is directory it is set to 0
 } OBJECTLIST;
 
-void Add(OBJECTLIST*,char* path,int type,char* date,unsigned long size );// adding object to the end of list
+void Add(OBJECTLIST*,char* path,int type, long int date,unsigned long size );// adding object to the end of list
 
-char** ScanDirectory(char* Directory);
+OBJECTLIST* Find(OBJECTLIST* list, char* path,int type);// function returns object if exists or it returns NULL if not
+
+
+char* NameOfElement(char* path);// if we want to create directory or file , we need it's name- this function extract last part from path
+
+OBJECTLIST* ScanDirectory(char* Directory);
 //function scans directory and returns list of all objects inside(later directories can be ignored)  
 
 
