@@ -17,10 +17,12 @@ Values=CheckDirectories(ArgNum,Arg);
 printf("Wartosci to :\n");
 printf("%s pierwsze, %s drugie, %d czas,%d synchronizacja,%d rozmiar\n",(Values).FirstDir,(Values).SecondDir,(Values).time_wait,(Values).deepSynch,(Values).FileSize);
 
-pointer=ScanDirectory(Values.FirstDir);
+//pointer=ScanDirectory(Values.FirstDir);
+
+CopyFiles(Values.FirstDir,Values.SecondDir,Values.deepSynch);
 
 
-char* teskt= NameOfElement("siemaneczko/katalog/");
+char* teskt= NameOfLastElement("siemaneczko/katalog/");
 
 printf("asd");
 

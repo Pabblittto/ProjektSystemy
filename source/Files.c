@@ -61,7 +61,7 @@ OBJECTLIST* ScanDirectory(char* Directory)
                 tmpDate=0;
             }
             
-            Add(List,tmppath,tmptype,tmpDate,tmpsize); // add object to list 
+            Add(&List,tmppath,tmptype,tmpDate,tmpsize); // add object to list 
         }
         
     }
@@ -70,25 +70,31 @@ OBJECTLIST* ScanDirectory(char* Directory)
 }
 
 
-void Add(OBJECTLIST* first,char* path,int type,long int date,unsigned long size )
+void Add(OBJECTLIST** first,char* path,int type,long int date,unsigned long size )
 {
-    if(first=NULL){// there is no elements in list
+    //OBJECTLIST* first=*firstparam;
+    OBJECTLIST* AddedObj= malloc(sizeof(OBJECTLIST));
+
+    AddedObj->date=date;
+    AddedObj->next=NULL;
+    AddedObj->path=path;
+    AddedObj->type=type;
+    AddedObj->size=size;
+
+    if(first==NULL){// there is no elements in list
     first= malloc(sizeof(OBJECTLIST));
     }
     else 
     {
-        while(first->next!=NULL){
-            first=first->next;
+        while((*first)->next!=NULL){
+            first=(*first)->next;
         }
-        first->next= malloc(sizeof(OBJECTLIST)); // alloct memory
-        first=first->next;// become this newly created memory
+        (*first)->next= malloc(sizeof(OBJECTLIST)); // alloct memory//// teeeeeeeeeee ale jak stajesz sie nulem to nic na ciebie nie kop
+        (*first)=(*first)->next;// become this newly created memory
     }
 
-    first->date=date;
-    first->next=NULL;
-    first->path=path;
-    first->type=type;
-    first->size=size;
+
+
 }
 
 OBJECTLIST* Find(OBJECTLIST* List, char* path,int type)
@@ -109,9 +115,10 @@ OBJECTLIST* Find(OBJECTLIST* List, char* path,int type)
     return result;
 }
 
-char* NameOfElement(char* path)
+char* NameOfLastElement(char* path)
 {
-    char result[256]="";
+    //char* tmp=malloc(sizeof(char)*256);
+    char tmp[255];
     int end=0;// if
     int iterator=1;
     int lenght=strlen(path);
@@ -120,15 +127,25 @@ char* NameOfElement(char* path)
     iterator=2;
     char znak;
 
-    while( path[lenght-iterator]!='/' ){
+    while( path[lenght-iterator]!='/'){
         znak=path[lenght-iterator];
-
-        strcat(result,&znak);
+        tmp[iterator-2]=znak;
+       // strcat(tmp,&znak);
         iterator++;
-    }// this name is reversed
-        
-    strrev(result);
 
+    }// this name is reversed
+
+    int strlenght=strlen(tmp);
+    char* result=malloc(sizeof(char)*strlenght);
+    
+
+    iterator=1;
+    for(; iterator <= strlenght; iterator++)
+    {
+        znak=tmp[strlenght-iterator];
+        result[iterator-1]=znak;
+    }
+    
     return result;
 }
 
@@ -142,16 +159,24 @@ OBJECTLIST* tmp;// tmp pointer for copying
 
     while(FilesInFirst!=NULL){
 
-        if(FilesInFirst->type==1 && IfDeepSynch==1)// if its directory and recursive mode is on
-        {
-            if(tmp=Find(FilesInSecond,FilesInFirst->path,FilesInFirst->type)!=NULL)// file of directory exists
+        if(FilesInFirst->type==1 && IfDeepSynch==1)// if element is directory and recursive mode is on
+        { 
+            tmp=Find(FilesInSecond,FilesInFirst->path,FilesInFirst->type);// check if directory exists
+            if(tmp!=NULL)//  directory exists, so go into it
             {
                CopyFiles(FilesInFirst->path,tmp->path,IfDeepSynch);
             }
-            else
-            {               // one need to create this folder
-                char* tmpName= malloc(sizeof(char)*(strlen(SecondDir)+strlen(FilesInFirst->path)-strlen(FirstDir)));// create place for its name
+            else            // directory do not existrs - create it
+            {               
+                char* tmpName= malloc(sizeof(char)*(strlen(SecondDir)+strlen(FilesInFirst->path)-strlen(FirstDir)));// create place for new name 
                 // tu trzeba zrobic pojebane działania na stringu, który połączy Seconddir + "nazwa kolejnego katalogu"
+
+                strcat(tmpName,SecondDir);
+                if(SecondDir[strlen(SecondDir-1)]!='/')
+                    strcat(tmpName,"/");
+                strcat(tmpName,NameOfLastElement(FilesInFirst->path));
+
+
 
                 mkdir(tmpName,S_IRWXU|S_IRWXG|S_IROTH);// create folder !!
 
