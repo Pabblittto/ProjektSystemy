@@ -28,12 +28,12 @@ OBJECTLIST* ScanDirectory(char* Directory)
 
     struct stat tmpStatObj;
 
-
+    
     while((tmp=readdir(DirPointer))!=NULL)// read all objects in directory
     {
         if( strcmp(tmp->d_name,".")!=0 && strcmp(tmp->d_name,"..")!=0){// ignore ".." and "." "files"
 
-                if(strcmp(&tmp->d_type,"DT_DIR")!=0)// if the file is anything than directory
+                if(tmp->d_type!=4)// if the file is anything than directory (4 is asociaed with directories)
                     tmptype=0;// its simple file, not directory
                 else
                     tmptype=1;// its directory
@@ -72,7 +72,7 @@ OBJECTLIST* ScanDirectory(char* Directory)
 
 void Add(OBJECTLIST** first,char* path,int type,long int date,unsigned long size )
 {
-    //OBJECTLIST* first=*firstparam;
+    OBJECTLIST* beginning=*first;// the beggining of whole list
     OBJECTLIST* AddedObj= malloc(sizeof(OBJECTLIST));
 
     AddedObj->date=date;
@@ -81,44 +81,52 @@ void Add(OBJECTLIST** first,char* path,int type,long int date,unsigned long size
     AddedObj->type=type;
     AddedObj->size=size;
 
-    if(first==NULL){// there is no elements in list
-    first= malloc(sizeof(OBJECTLIST));
+    if(*first==NULL){// there is no elements in list
+    (*first)=AddedObj;
     }
     else 
     {
         while((*first)->next!=NULL){
-            first=(*first)->next;
+            (*first)=(*first)->next;
         }
-        (*first)->next= malloc(sizeof(OBJECTLIST)); // alloct memory//// teeeeeeeeeee ale jak stajesz sie nulem to nic na ciebie nie kop
-        (*first)=(*first)->next;// become this newly created memory
+
+        (*first)->next=AddedObj;
     }
 
-
-
+    if(beginning!=NULL)
+    *first=beginning;
 }
 
 OBJECTLIST* Find(OBJECTLIST* List, char* path,int type)
 {
     OBJECTLIST* result=NULL;
+    char* ArgumentLast=NameOfLastElement(path);
+    char* ListLast=NULL;
 
     while(List!=NULL){
-        if(strcmp(List->path,path)==0 && List->type==type)// if there is an object with the same type and name path
+
+        ListLast=NameOfLastElement(List->path);
+        if(strcmp(ListLast,ArgumentLast)==0 && List->type==type)// if there is an object with the same type and name path
         {
             result=List;
-            return result;
+            break;
         }
         else
         {
             List=List->next;
         }
     }
+
+    if(ListLast!=NULL)
+    free(ListLast);
+    free(ArgumentLast);
+
     return result;
 }
 
 char* NameOfLastElement(char* path)
 {
-    //char* tmp=malloc(sizeof(char)*256);
-    char tmp[255];
+    char tmp[250];
     int end=0;// if
     int iterator=1;
     int lenght=strlen(path);
@@ -126,11 +134,11 @@ char* NameOfLastElement(char* path)
     if(path[lenght-1]=='/')
     iterator=2;
     char znak;
+    int starter=iterator;// the value which is specyfiing on which number number iteretor starterd 
 
     while( path[lenght-iterator]!='/'){
         znak=path[lenght-iterator];
-        tmp[iterator-2]=znak;
-       // strcat(tmp,&znak);
+        tmp[iterator-starter]=znak;
         iterator++;
 
     }// this name is reversed
@@ -155,7 +163,8 @@ void CopyFiles(char* FirstDir,char* SecondDir,int IfDeepSynch)
 OBJECTLIST* FilesInFirst=ScanDirectory(FirstDir);
 OBJECTLIST* FilesInSecond=ScanDirectory(SecondDir);
 
-OBJECTLIST* tmp;// tmp pointer for copying
+OBJECTLIST* tmp=NULL;// tmp pointer for copying- to gowno 
+//char* slash="/";
 
     while(FilesInFirst!=NULL){
 
@@ -168,18 +177,18 @@ OBJECTLIST* tmp;// tmp pointer for copying
             }
             else            // directory do not existrs - create it
             {               
-                char* tmpName= malloc(sizeof(char)*(strlen(SecondDir)+strlen(FilesInFirst->path)-strlen(FirstDir)));// create place for new name 
+                char* tmpName= malloc(sizeof(char)*(strlen(SecondDir)+strlen(FilesInFirst->path)-strlen(FirstDir)+2));// create place for new name 
                 // tu trzeba zrobic pojebane działania na stringu, który połączy Seconddir + "nazwa kolejnego katalogu"
 
                 strcat(tmpName,SecondDir);
-                if(SecondDir[strlen(SecondDir-1)]!='/')
+
+                char end=SecondDir[strlen(SecondDir)-1];
+                if(end!='/')
                     strcat(tmpName,"/");
+
                 strcat(tmpName,NameOfLastElement(FilesInFirst->path));
-
-
-
                 mkdir(tmpName,S_IRWXU|S_IRWXG|S_IROTH);// create folder !!
-
+                CopyFiles(FilesInFirst->path,tmpName,IfDeepSynch);// if it does not exist- create it and create other  files nsde ths folder
             }
             
         }
@@ -193,5 +202,9 @@ OBJECTLIST* tmp;// tmp pointer for copying
 
         FilesInFirst=FilesInFirst->next;// move to next object 
     }
+
+    //free(FilesInFirst);
+    //free(FilesInSecond);
+    //free(tmp); // if  i dont comment it some crazy shit happens
 
 }
