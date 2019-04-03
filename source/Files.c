@@ -127,8 +127,7 @@ OBJECTLIST* Find(OBJECTLIST* List, char* path,int type)
 
 char* NameOfLastElement(char* path)
 {
-    char tmp[250];
-    int end=0;// if
+    char tmp[250]="";
     int iterator=1;
     int lenght=strlen(path);
 
@@ -145,8 +144,8 @@ char* NameOfLastElement(char* path)
     }// this name is reversed
 
     int strlenght=strlen(tmp);
-    char* result=malloc(sizeof(char)*strlenght);
-    
+    char* result=calloc(strlenght,sizeof(char));
+
 
     iterator=1;
     for(; iterator <= strlenght; iterator++)
@@ -168,6 +167,8 @@ void CopyFileWithReadWrite(char* PathToFile,char* PathToDirectory,long int TimeO
         strcat(NewFilePath,"/");// add '/' on the end if neccesarry- becouse we need : "directory/filename"
         
     strcat(NewFilePath,filename);
+
+    free(filename);// this pointer is allocated in nameoflastelement funtion
 
     int ReadFile= open(PathToFile,O_RDONLY);
 
