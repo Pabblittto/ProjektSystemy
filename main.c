@@ -19,7 +19,7 @@ printf("%s pierwsze, %s drugie, %d czas,%d synchronizacja,%d rozmiar\n",(Values)
 
 //pointer=ScanDirectory(Values.FirstDir);
 
-CopyFiles(Values.FirstDir,Values.SecondDir,Values.deepSynch);
+CopyFiles(Values.FirstDir,Values.SecondDir,Values.deepSynch,Values.FileSize);
 
 
 char* teskt= NameOfLastElement("siemaneczko/katalog/");

@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <utime.h>
+#include <fcntl.h>
 
 
 OBJECTLIST* ScanDirectory(char* Directory)
@@ -157,11 +158,43 @@ char* NameOfLastElement(char* path)
     return result;
 }
 
+void CopyFileWithReadWrite(char* PathToFile,char* PathToDirectory,long int TimeOfModyfy)// path to directory says where this file should be created
+{                                                                               // if file should be replaced- do it
+    char* filename=NameOfLastElement(PathToFile);
+    char* NewFilePath=malloc(sizeof(char)*(strlen(PathToDirectory)+strlen(filename)+3));// allock enought space
+    strcat(NewFilePath,PathToDirectory);
+    char znak=NewFilePath[strlen(NewFilePath)-1];
+    if(znak!='/')
+        strcat(NewFilePath,"/");// add '/' on the end if neccesarry- becouse we need : "directory/filename"
+        
+    strcat(NewFilePath,filename);
 
-void CopyFiles(char* FirstDir,char* SecondDir,int IfDeepSynch)
+    int ReadFile= open(PathToFile,O_RDONLY);
+
+    int CreatedFile= open(NewFilePath,O_WRONLY|O_CREAT| O_TRUNC ,S_IRWXU|S_IRWXG|S_IROTH);// user and group have full permission, file is truncated and created if not exists
+    char buffer[1];
+    while (read(ReadFile,buffer,sizeof(buffer)))// read one bit till if reach end
+    {
+        write(CreatedFile,buffer,1);
+    }
+
+    struct utimbuf ModyfiTime={TimeOfModyfy,TimeOfModyfy};
+    utime(NewFilePath,&ModyfiTime);
+
+    close(CreatedFile);
+    close(ReadFile);
+    free(NewFilePath);
+}
+
+
+
+void CopyFiles(char* FirstDir,char* SecondDir,int IfDeepSynch,int FileSize)
 {
 OBJECTLIST* FilesInFirst=ScanDirectory(FirstDir);
 OBJECTLIST* FilesInSecond=ScanDirectory(SecondDir);
+
+OBJECTLIST* BeginningFirst=FilesInFirst; // pointers on the beginning of lists
+OBJECTLIST* BeginnigSecond=FilesInSecond;
 
 OBJECTLIST* tmp=NULL;// tmp pointer for copying- to gowno 
 //char* slash="/";
@@ -173,12 +206,11 @@ OBJECTLIST* tmp=NULL;// tmp pointer for copying- to gowno
             tmp=Find(FilesInSecond,FilesInFirst->path,FilesInFirst->type);// check if directory exists
             if(tmp!=NULL)//  directory exists, so go into it
             {
-               CopyFiles(FilesInFirst->path,tmp->path,IfDeepSynch);
+               CopyFiles(FilesInFirst->path,tmp->path,IfDeepSynch,FileSize);
             }
             else            // directory do not existrs - create it
             {               
                 char* tmpName= malloc(sizeof(char)*(strlen(SecondDir)+strlen(FilesInFirst->path)-strlen(FirstDir)+2));// create place for new name 
-                // tu trzeba zrobic pojebane działania na stringu, który połączy Seconddir + "nazwa kolejnego katalogu"
 
                 strcat(tmpName,SecondDir);
 
@@ -188,20 +220,48 @@ OBJECTLIST* tmp=NULL;// tmp pointer for copying- to gowno
 
                 strcat(tmpName,NameOfLastElement(FilesInFirst->path));
                 mkdir(tmpName,S_IRWXU|S_IRWXG|S_IROTH);// create folder !!
-                CopyFiles(FilesInFirst->path,tmpName,IfDeepSynch);// if it does not exist- create it and create other  files nsde ths folder
+                CopyFiles(FilesInFirst->path,tmpName,IfDeepSynch,FileSize);// if it does not exist- create it and create other  files nsde ths folder
             }
             
         }
-        else// if this is a normal file
+        else if(FilesInFirst->type==0) // if this is a normal file
         {
-            /* code */
+            tmp=Find(FilesInSecond,FilesInFirst->path,FilesInFirst->type);// check if this file exists
+
+            if(tmp!=NULL){// file was found, now check its date of modyfy
+
+                if(tmp->date!=FilesInFirst->date){// date is not equal-  need to copy this file
+
+                    if(FilesInFirst->size<=(FileSize*1000000))
+                    {
+                        CopyFileWithReadWrite(FilesInFirst->path,SecondDir,FilesInFirst->date);
+                    }
+                    else
+                    {
+                                ////////////////////////////////// file is too big - u need to copy it with mmap 
+                    }
+                }
+            }
+            else// there is no file like that
+            {
+                    if(FilesInFirst->size<=(FileSize*1000000))
+                    {
+                        CopyFileWithReadWrite(FilesInFirst->path,SecondDir,FilesInFirst->date);
+                    }
+                    else
+                    {
+                                ////////////////////////////////// file is too big - u need to copy it with mmap 
+                    }
+            }
+            
         }
+        // if this is a directory and deepsynch is false - it will do nothing
         
-
-
-
         FilesInFirst=FilesInFirst->next;// move to next object 
     }
+
+
+    ////////////////////// in this moment one need to chcek if there is some files to delete
 
     //free(FilesInFirst);
     //free(FilesInSecond);

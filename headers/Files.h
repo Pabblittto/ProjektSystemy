@@ -31,5 +31,9 @@ OBJECTLIST* ScanDirectory(char* Directory);
 //function scans directory and returns list of all objects inside(later directories can be ignored)  
 
 
-void CopyFiles(char* FiirstDir,char* SecondDir,int IfDeepSynch);
+void CopyFiles(char* FiirstDir,char* SecondDir,int IfDeepSynch,int FileSize);
 //main function for doing whole job
+
+
+void CopyFileWithReadWrite(char* PathToFile,char* PathToDirectory,long int TimeofModyfy);// finction which copy files with Read/Write functions
+void CopyFileWithMmap(char* PathToFile,char* PathToDirectory);
