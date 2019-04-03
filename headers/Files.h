@@ -36,4 +36,4 @@ void CopyFiles(char* FiirstDir,char* SecondDir,int IfDeepSynch,int FileSize);
 
 
 void CopyFileWithReadWrite(char* PathToFile,char* PathToDirectory,long int TimeofModyfy);// finction which copy files with Read/Write functions
-void CopyFileWithMmap(char* PathToFile,char* PathToDirectory);
+void CopyFileWithMmap(char* PathToFile,char* PathToDirectory,long int TimeOfModyfy);

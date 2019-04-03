@@ -174,6 +174,7 @@ void CopyFileWithReadWrite(char* PathToFile,char* PathToDirectory,long int TimeO
 
     int CreatedFile= open(NewFilePath,O_WRONLY|O_CREAT| O_TRUNC ,S_IRWXU|S_IRWXG|S_IROTH);// user and group have full permission, file is truncated and created if not exists
     char buffer[1];
+
     while (read(ReadFile,buffer,sizeof(buffer)))// read one bit till if reach end
     {
         write(CreatedFile,buffer,1);
@@ -187,6 +188,16 @@ void CopyFileWithReadWrite(char* PathToFile,char* PathToDirectory,long int TimeO
     free(NewFilePath);
 }
 
+void CopyFileWithMmap(char* PathToFile,char* PathToDirectory,long int TimeOfModyfy)
+{
+    // need to write this function
+
+
+
+
+
+
+}
 
 
 void CopyFiles(char* FirstDir,char* SecondDir,int IfDeepSynch,int FileSize)
