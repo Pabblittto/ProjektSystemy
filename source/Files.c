@@ -5,6 +5,10 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <utime.h>
+#include <sys/mman.h>
+#include <unistd.h>
+#include<stdio.h>
+#include<dirent.h>
 #include <fcntl.h>
 
 
@@ -188,16 +192,73 @@ void CopyFileWithReadWrite(char* PathToFile,char* PathToDirectory,long int TimeO
     free(NewFilePath);
 }
 
-void CopyFileWithMmap(char* PathToFile,char* PathToDirectory,long int TimeOfModyfy)
+void CopyFileWithMmap(char* PathToFile,char* PathToDirectory,long int TimeOfModyfy,int SizeOfFile)
 {
-    // need to write this function
+    char* filename=NameOfLastElement(PathToFile);
+    char* NewFilePath=malloc(sizeof(char)*(strlen(PathToDirectory)+strlen(filename)+3));// allock enought space
+    strcat(NewFilePath,PathToDirectory);
+    char znak=NewFilePath[strlen(NewFilePath)-1];
+    if(znak!='/')
+        strcat(NewFilePath,"/");// add '/' on the end if neccesarry- becouse we need : "directory/filename"
+        
+    strcat(NewFilePath,filename);
 
+    free(filename);// this pointer is allocated in nameoflastelement funtion- now its useless
 
+    remove(NewFilePath);// if file exists this line remove it
 
+    int ReadFile= open(PathToFile,O_RDONLY); // file descriptor
 
+    int CreatedFile= open(NewFilePath,O_WRONLY | O_CREAT| O_APPEND ,S_IRWXU|S_IRWXG|S_IROTH);// user and group have full permission, file is truncated and created if not exists
 
+    size_t pagesize= getpagesize();
 
+    char* region;
+    
+
+        region=mmap(NULL,SizeOfFile,PROT_READ|PROT_WRITE,MAP_PRIVATE,ReadFile,0);
+
+        write(CreatedFile,region,SizeOfFile);
+
+    struct utimbuf ModyfiTime={TimeOfModyfy,TimeOfModyfy};
+    utime(NewFilePath,&ModyfiTime);
+    
+    close(CreatedFile);
+    close(ReadFile);
+    free(NewFilePath);
 }
+
+void DeleteExtraFiles(OBJECTLIST* DirectoryToCheck, OBJECTLIST* TheChoosenOneDirectory,int deepSynch ){
+
+    OBJECTLIST* tmp;
+
+    while(DirectoryToCheck!=NULL){ // delete files in second directory if it dont exists in first
+
+        if(DirectoryToCheck->type==1 && deepSynch==1){// if the element is a directory and recursive method is on
+
+            tmp=Find(TheChoosenOneDirectory,DirectoryToCheck->path,DirectoryToCheck->type);// 
+
+            if(tmp!=NULL){// if this directory exists 
+                // tu trzeba rekurencje odpalic ostrą
+            }
+            else
+            {
+                
+            }
+            
+
+        }else if(DirectoryToCheck->type==0)// if its normal file
+        {
+            tmp=Find(TheChoosenOneDirectory,DirectoryToCheck->path,DirectoryToCheck->type);// look for this file
+
+                if(tmp==NULL){// if this file does not exists in first directory- delete it
+                    remove(DirectoryToCheck->path);
+                }
+        }
+    
+    }
+}
+
 
 
 void CopyFiles(char* FirstDir,char* SecondDir,int IfDeepSynch,int FileSize)
@@ -208,8 +269,11 @@ OBJECTLIST* FilesInSecond=ScanDirectory(SecondDir);
 OBJECTLIST* BeginningFirst=FilesInFirst; // pointers on the beginning of lists
 OBJECTLIST* BeginnigSecond=FilesInSecond;
 
-OBJECTLIST* tmp=NULL;// tmp pointer for copying- to gowno 
-//char* slash="/";
+OBJECTLIST* tmp=NULL;// tmp pointer for copying
+
+
+    FilesInFirst=BeginningFirst;// move all pointer to the beginning of list
+    FilesInSecond=BeginnigSecond;
 
     while(FilesInFirst!=NULL){
 
@@ -250,7 +314,7 @@ OBJECTLIST* tmp=NULL;// tmp pointer for copying- to gowno
                     }
                     else
                     {
-                                ////////////////////////////////// file is too big - u need to copy it with mmap 
+                        CopyFileWithMmap(FilesInFirst->path,SecondDir,FilesInFirst->date,FilesInFirst->size);
                     }
                 }
             }
@@ -262,15 +326,15 @@ OBJECTLIST* tmp=NULL;// tmp pointer for copying- to gowno
                     }
                     else
                     {
-                                ////////////////////////////////// file is too big - u need to copy it with mmap 
+                        CopyFileWithMmap(FilesInFirst->path,SecondDir,FilesInFirst->date,FilesInFirst->size);
                     }
-            }
-            
+            }  
         }
         // if this is a directory and deepsynch is false - it will do nothing
         
         FilesInFirst=FilesInFirst->next;// move to next object 
     }
+
 
 
     ////////////////////// in this moment one need to chcek if there is some files to delete

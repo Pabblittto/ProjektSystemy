@@ -7,9 +7,7 @@
 #include<stdlib.h>
 #include <string.h>
 */
-#include<stdio.h>
-#include<sys/types.h>
-#include<dirent.h>
+
 
 typedef struct Object{// object from directory
     char* path;     // path to this certain 
@@ -34,6 +32,6 @@ OBJECTLIST* ScanDirectory(char* Directory);
 void CopyFiles(char* FiirstDir,char* SecondDir,int IfDeepSynch,int FileSize);
 //main function for doing whole job
 
-
 void CopyFileWithReadWrite(char* PathToFile,char* PathToDirectory,long int TimeofModyfy);// finction which copy files with Read/Write functions
-void CopyFileWithMmap(char* PathToFile,char* PathToDirectory,long int TimeOfModyfy);
+void CopyFileWithMmap(char* PathToFile,char* PathToDirectory,long int TimeOfModyfy,int FileSize);
+void DeleteExtraFiles(OBJECTLIST*,OBJECTLIST*,int);//

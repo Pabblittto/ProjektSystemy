@@ -19,8 +19,6 @@ typedef struct myconfig
     int FileSize;//maximum size in MB of "small" files
 } CONFIG;
 
-
-
 CONFIG CheckDirectories(int,char**);// function wchich check if directories exists + chcecks additional arguments
                                         // if the was a problem, returns null
 
