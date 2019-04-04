@@ -7,6 +7,10 @@
 #include<stdlib.h>
 #include <string.h>
 */
+#ifndef FILES_H
+#define FILES_H 1
+
+#include "../headers/Start.h"
 
 
 typedef struct Object{// object from directory
@@ -34,4 +38,8 @@ void CopyFiles(char* FiirstDir,char* SecondDir,int IfDeepSynch,int FileSize);
 
 void CopyFileWithReadWrite(char* PathToFile,char* PathToDirectory,long int TimeofModyfy);// finction which copy files with Read/Write functions
 void CopyFileWithMmap(char* PathToFile,char* PathToDirectory,long int TimeOfModyfy,int FileSize);
-void DeleteExtraFiles(OBJECTLIST*,OBJECTLIST*,int);//
+void DeleteExtraFiles(char* DirectoryToCheck_, char* TheChoosenOneDirectory_,int deepSynch );//
+
+void GetRealPath(char** Args[]);// function changes short paths iinto absolute path
+void Wholeprogram(CONFIG configuration,int* isWorking );
+#endif

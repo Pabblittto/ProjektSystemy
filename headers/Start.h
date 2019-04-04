@@ -1,3 +1,7 @@
+#ifndef START_H
+#define START_H 1
+
+
 #include<stdio.h> // biblioteka z funkcjami, które sprawdzają czy istnieje dany katalog itd
 #include <errno.h>// biblioteka do obsługi błędów
 #include <sys/types.h>// biblioteka do typów systemowych
@@ -9,7 +13,7 @@
 #define DEFAULT_TIME 500;
 #define DEFAULT_SIZE 10;
 
-
+#ifndef CONFIG // ale to jest ogarniete- to trzeba przyzanc
 typedef struct myconfig
 {
     int time_wait;// how much time deamon waits - can be changed
@@ -18,6 +22,7 @@ typedef struct myconfig
     int deepSynch;// boolean if there is -R parameter given, 1-true|| 0-false
     int FileSize;//maximum size in MB of "small" files
 } CONFIG;
+#endif
 
 CONFIG CheckDirectories(int,char**);// function wchich check if directories exists + chcecks additional arguments
                                         // if the was a problem, returns null
@@ -26,3 +31,4 @@ CONFIG InitConfigurationStructure(int time,int SizeMB,int Synch,char* First,char
                                                                                 // if the parameter is -1 -use default value
 
 int ISnumber(char*string);// returns 1 if string is long number
+#endif

@@ -1,7 +1,9 @@
 #include "../headers/Files.h"
+
+
 #include<stdlib.h>
 #include<string.h>
-#include <sys/stat.h>
+
 #include <unistd.h>
 #include <sys/types.h>
 #include <utime.h>
@@ -9,7 +11,12 @@
 #include <unistd.h>
 #include<stdio.h>
 #include<dirent.h>
+
+
+#include <limits.h>
+#include <stdlib.h>
 #include <fcntl.h>
+#include <sys/stat.h>
 
 
 OBJECTLIST* ScanDirectory(char* Directory)
@@ -228,7 +235,32 @@ void CopyFileWithMmap(char* PathToFile,char* PathToDirectory,long int TimeOfMody
     free(NewFilePath);
 }
 
-void DeleteExtraFiles(OBJECTLIST* DirectoryToCheck, OBJECTLIST* TheChoosenOneDirectory,int deepSynch ){
+void DeleteEverythingIDire(char* pathToDirectory){
+OBJECTLIST* allFilesInside= ScanDirectory(pathToDirectory);
+    while(allFilesInside!=NULL){
+
+        if(allFilesInside->type==1){// is this is a directory
+            DeleteEverythingIDire(allFilesInside->path);
+            remove(allFilesInside->path);
+        }
+        else
+        {           // if ist normal file
+                remove(allFilesInside->path);
+        }
+        
+        allFilesInside=allFilesInside->next;
+    }
+    
+
+
+}
+
+
+
+
+void DeleteExtraFiles(char* DirectoryToCheck_, char* TheChoosenOneDirectory_,int deepSynch ){
+    OBJECTLIST* DirectoryToCheck=ScanDirectory(DirectoryToCheck_);
+    OBJECTLIST* TheChoosenOneDirectory=ScanDirectory(TheChoosenOneDirectory_);
 
     OBJECTLIST* tmp;
 
@@ -239,11 +271,12 @@ void DeleteExtraFiles(OBJECTLIST* DirectoryToCheck, OBJECTLIST* TheChoosenOneDir
             tmp=Find(TheChoosenOneDirectory,DirectoryToCheck->path,DirectoryToCheck->type);// 
 
             if(tmp!=NULL){// if this directory exists 
-                // tu trzeba rekurencje odpalic ostrą
+                DeleteExtraFiles(DirectoryToCheck->path,tmp->path,deepSynch);
             }
             else
             {
-                
+                DeleteEverythingIDire(DirectoryToCheck->path);
+                remove(DirectoryToCheck->path);// delete this path
             }
             
 
@@ -255,8 +288,13 @@ void DeleteExtraFiles(OBJECTLIST* DirectoryToCheck, OBJECTLIST* TheChoosenOneDir
                     remove(DirectoryToCheck->path);
                 }
         }
+        DirectoryToCheck=DirectoryToCheck->next;
     
     }
+
+    free(tmp);
+    free(DirectoryToCheck);
+    free(TheChoosenOneDirectory);
 }
 
 
@@ -336,11 +374,20 @@ OBJECTLIST* tmp=NULL;// tmp pointer for copying
     }
 
 
+    free(FilesInFirst);
+    free(FilesInSecond);
 
-    ////////////////////// in this moment one need to chcek if there is some files to delete
+}
 
-    //free(FilesInFirst);
-    //free(FilesInSecond);
-    //free(tmp); // if  i dont comment it some crazy shit happens
+
+void Wholeprogram(CONFIG configuration,int* isWorking ){
+
+    if(*isWorking==0){          // if program is workking do not make it again 
+        *isWorking=1;
+        DeleteExtraFiles(configuration.SecondDir,configuration.FirstDir,configuration.deepSynch);
+        CopyFiles(configuration.FirstDir,configuration.SecondDir,configuration.deepSynch,configuration.FileSize);
+
+        *isWorking=0;
+    }
 
 }
