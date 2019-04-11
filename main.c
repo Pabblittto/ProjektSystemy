@@ -25,11 +25,16 @@
 
  void Handler(int sig){
 
+printf("W srodku sygnalu \n");
          if(IsDeamonWorking==0){
+                printf("odpalany jest sygnal \n");
                  IsDeamonWorking=1;
+
+                 printf("pierwszy katalog: %s\n drugi katalog: %s \n masa maksymalna: %d",Values.FirstDir,Values.SecondDir,Values.FileSize);
                 CopyFiles(Values.FirstDir,Values.SecondDir,Values.deepSynch,Values.FileSize);
                 DeleteExtraFiles(Values.SecondDir,Values.FirstDir,Values.deepSynch);
                 IsDeamonWorking=0;
+                printf("a tu koniec sygnalu \n");
          }
  }
 
@@ -84,8 +89,8 @@ int main(int ArgNum,char* Arg[]) {
         }
         
         close(STDIN_FILENO);
-        close(STDOUT_FILENO);
-        close(STDERR_FILENO);
+       // close(STDOUT_FILENO);
+        //close(STDERR_FILENO);
 
 
         signal(SIGUSR1,Handler);

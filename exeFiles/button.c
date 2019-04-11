@@ -9,19 +9,25 @@
 
 
 int main(){
-
-char pwd[255];
-getcwd(pwd,sizeof(pwd));
+char tmp[244];
+char *pwd=calloc(255,sizeof(char));
+getcwd(tmp,sizeof(tmp));
+strcat(pwd,tmp);
 strcat(pwd,"/pid");
-int fd=open(pwd,O_RDONLY);
-char *buffor=calloc(20,sizeof(char));
+int fd=open("./pid",O_RDWR);
+char *buffor=malloc(20*sizeof(char));
 
-read(fd,buffor,strlen(buffor));
-printf("przeczytana wartosc to %s",buffor);
-
+read(fd,buffor,20);
 close(fd);
 
-//kill(123,SIGUSR1);// tu trzeba dac pid z pliku
+int number=0,len;
+len=strlen(buffor);
+for(int i = 0; i < len; i++)
+{
+    number= number *10 + (buffor[i] - '0');
+}
+
+kill(number,SIGUSR1);
 
     return 0;
 }
