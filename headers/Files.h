@@ -42,4 +42,6 @@ void DeleteExtraFiles(char* DirectoryToCheck_, char* TheChoosenOneDirectory_,int
 
 void GetRealPath(char** Args[]);// function changes short paths iinto absolute path
 void Wholeprogram(CONFIG configuration,int* isWorking );
+
+void freeList(OBJECTLIST* First);
 #endif

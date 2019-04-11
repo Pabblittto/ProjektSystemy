@@ -4,7 +4,7 @@ Projekt: main.c start.o Files.o
 
 #to na dole to jeden z posrednich pliczków, trzeba go zrobić z plik.h i plik.c
 start.o: ./headers/Start.h ./source/Start.c
-	gcc ./source/Start.c -c -g -o ./exeFiles/start.o
+	gcc ./source/Start.c -c  -g -o ./exeFiles/start.o
 
 
 Files.o: ./headers/Files.h ./source/Files.c

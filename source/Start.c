@@ -18,7 +18,7 @@ CONFIG CheckDirectories(int ArgNum,char* List[])
 
 
     for(int i=1;i<ArgNum;i++){// iliterate for all parameters
-        printf("%s",List[i]);
+
 
         if(!strcmp(List[i],"-R") || !strcmp(List[i],"-r"))
         {
@@ -28,7 +28,6 @@ CONFIG CheckDirectories(int ArgNum,char* List[])
         else if (!strcmp(List[i],"-t") || !strcmp(List[i],"-T")) // change time
         {
             i++;
-            printf("%s",List[i]);
                if(ISnumber(List[i]) && atoi(List[i])>0)//check if the parameter is a number or its smaller than 0
                {
                     time=atoi(List[i]);

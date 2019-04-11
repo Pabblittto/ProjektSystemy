@@ -25,7 +25,8 @@ OBJECTLIST* ScanDirectory(char* Directory)
 
     if(DirPointer==NULL){
         printf("Fatal error: Directory was deleted/not found");
-        exit(1);
+        
+        return NULL;
     }
 
     OBJECTLIST* List=NULL;
@@ -50,7 +51,7 @@ OBJECTLIST* ScanDirectory(char* Directory)
                 else
                     tmptype=1;// its directory
                     
-                tmppath=malloc(sizeof(char)*(strlen(Directory)+strlen(tmp->d_name)+5)); // make space for whole name + 5 chars just in case
+                tmppath=calloc((strlen(Directory)+strlen(tmp->d_name)+5),sizeof(char)); // make space for whole name + 5 chars just in case
                 
                 strcat(tmppath,Directory);
 
@@ -78,6 +79,7 @@ OBJECTLIST* ScanDirectory(char* Directory)
         
     }
 
+
     return List;
 }
 
@@ -85,7 +87,7 @@ OBJECTLIST* ScanDirectory(char* Directory)
 void Add(OBJECTLIST** first,char* path,int type,long int date,unsigned long size )
 {
     OBJECTLIST* beginning=*first;// the beggining of whole list
-    OBJECTLIST* AddedObj= malloc(sizeof(OBJECTLIST));
+    OBJECTLIST* AddedObj= calloc(1,sizeof(OBJECTLIST));
 
     AddedObj->date=date;
     AddedObj->next=NULL;
@@ -171,7 +173,7 @@ char* NameOfLastElement(char* path)
 void CopyFileWithReadWrite(char* PathToFile,char* PathToDirectory,long int TimeOfModyfy)// path to directory says where this file should be created
 {                                                                               // if file should be replaced- do it
     char* filename=NameOfLastElement(PathToFile);
-    char* NewFilePath=malloc(sizeof(char)*(strlen(PathToDirectory)+strlen(filename)+3));// allock enought space
+    char* NewFilePath=calloc((strlen(PathToDirectory)+strlen(filename)+3),sizeof(char));// allock enought space
     strcat(NewFilePath,PathToDirectory);
     char znak=NewFilePath[strlen(NewFilePath)-1];
     if(znak!='/')
@@ -202,7 +204,7 @@ void CopyFileWithReadWrite(char* PathToFile,char* PathToDirectory,long int TimeO
 void CopyFileWithMmap(char* PathToFile,char* PathToDirectory,long int TimeOfModyfy,int SizeOfFile)
 {
     char* filename=NameOfLastElement(PathToFile);
-    char* NewFilePath=malloc(sizeof(char)*(strlen(PathToDirectory)+strlen(filename)+3));// allock enought space
+    char* NewFilePath=calloc((strlen(PathToDirectory)+strlen(filename)+3),sizeof(char));// allock enought space
     strcat(NewFilePath,PathToDirectory);
     char znak=NewFilePath[strlen(NewFilePath)-1];
     if(znak!='/')
@@ -262,6 +264,9 @@ void DeleteExtraFiles(char* DirectoryToCheck_, char* TheChoosenOneDirectory_,int
     OBJECTLIST* DirectoryToCheck=ScanDirectory(DirectoryToCheck_);
     OBJECTLIST* TheChoosenOneDirectory=ScanDirectory(TheChoosenOneDirectory_);
 
+    OBJECTLIST* BeginningToCheck=DirectoryToCheck;
+    OBJECTLIST* BeginningChoosen=TheChoosenOneDirectory;
+
     OBJECTLIST* tmp;
 
     while(DirectoryToCheck!=NULL){ // delete files in second directory if it dont exists in first
@@ -292,9 +297,11 @@ void DeleteExtraFiles(char* DirectoryToCheck_, char* TheChoosenOneDirectory_,int
     
     }
 
-    free(tmp);
-    free(DirectoryToCheck);
-    free(TheChoosenOneDirectory);
+    if(DirectoryToCheck!=NULL)
+    freeList(DirectoryToCheck);
+
+    if(TheChoosenOneDirectory!=NULL)
+    freeList(TheChoosenOneDirectory);
 }
 
 
@@ -324,7 +331,7 @@ OBJECTLIST* tmp=NULL;// tmp pointer for copying
             }
             else            // directory do not existrs - create it
             {               
-                char* tmpName= malloc(sizeof(char)*(strlen(SecondDir)+strlen(FilesInFirst->path)-strlen(FirstDir)+2));// create place for new name 
+                char* tmpName= calloc((strlen(SecondDir)+strlen(FilesInFirst->path)-strlen(FirstDir)+2),sizeof(char));// create place for new name 
 
                 strcat(tmpName,SecondDir);
 
@@ -374,20 +381,34 @@ OBJECTLIST* tmp=NULL;// tmp pointer for copying
     }
 
 
-    free(FilesInFirst);
-    free(FilesInSecond);
+    if(BeginningFirst!=NULL)
+    freeList(BeginningFirst);
+
+    if(BeginnigSecond!=NULL)
+    freeList(BeginnigSecond);
 
 }
 
 
 void Wholeprogram(CONFIG configuration,int* isWorking ){
 
-    if(*isWorking==0){          // if program is workking do not make it again 
-        *isWorking=1;
+      // if program is workking do not make it again 
+
         DeleteExtraFiles(configuration.SecondDir,configuration.FirstDir,configuration.deepSynch);
         CopyFiles(configuration.FirstDir,configuration.SecondDir,configuration.deepSynch,configuration.FileSize);
 
-        *isWorking=0;
-    }
 
+
+}
+
+void freeList(OBJECTLIST* First){
+
+OBJECTLIST * tmp=NULL;
+if(First!=NULL){
+while(First!=NULL){ 
+    tmp=First;          
+    First=First->next;
+    free(tmp);
+    }
+}
 }
