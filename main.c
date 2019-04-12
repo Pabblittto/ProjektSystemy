@@ -18,33 +18,22 @@
 #include <stdio.h>
 
 
-
+volatile int flag=0;
+int * pointerOnFlag=(int*) &flag;
 
  volatile int IsDeamonWorking=0;// 0 means false- t s waiting
-int *pointerToDemon=(int*) &IsDeamonWorking;
 
  volatile CONFIG Values;
- const CONFIG * pointerOoValues=(CONFIG*) &Values;
-
 
  void Handler(int sig){
 
-printf("W srodku sygnalu \n");
-         if(*pointerToDemon==0){
-                printf("odpalany jest sygnal \n");
-                 *pointerToDemon=1;
-
-                 printf("pierwszy katalog: %s\n drugi katalog: %s \n masa maksymalna: %d",(*pointerOoValues).FirstDir,Values.SecondDir,Values.FileSize);
-                CopyFiles(Values.FirstDir,Values.SecondDir,Values.deepSynch,Values.FileSize);
-                DeleteExtraFiles(Values.SecondDir,Values.FirstDir,Values.deepSynch);
-                *pointerToDemon=0;
-                printf("a tu koniec sygnalu \n");
-         }
+         *pointerOnFlag=1;// change flago to 1
  }
+
 
 int main(int ArgNum,char* Arg[]) {
 
-
+        
         CONFIG Values;
         Values=CheckDirectories(ArgNum,Arg);
       
@@ -98,20 +87,18 @@ int main(int ArgNum,char* Arg[]) {
 
 
         signal(SIGUSR1,Handler);
-
+        
 
         while (1==1) {
                 
+                printf("demon obudzony\n");        
+                signal(SIGUSR1,SIG_IGN);// ignore siganll becouse deamon will be working
 
-                if(IsDeamonWorking==0){
-                        printf("demon sie obudzil");
-                IsDeamonWorking=1;
                 CopyFiles(Values.FirstDir,Values.SecondDir,Values.deepSynch,Values.FileSize);
                 DeleteExtraFiles(Values.SecondDir,Values.FirstDir,Values.deepSynch);
-                IsDeamonWorking=0;
+                signal(SIGUSR1,Handler);// so now signal can be pressed
 
-                }
-                        printf("demon demon idzei spac");
+                printf("demon poszedl spac\n");
                 sleep(Values.time_wait); 
         }
 

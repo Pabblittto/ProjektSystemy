@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <errno.h>
 
 
 OBJECTLIST* ScanDirectory(char* Directory)
@@ -24,8 +25,8 @@ OBJECTLIST* ScanDirectory(char* Directory)
     DIR* DirPointer=opendir(Directory);
 
     if(DirPointer==NULL){
-        printf("Fatal error: Directory was deleted/not found");
-        
+        printf("Fatal error: %s",strerror(errno));
+        closedir(DirPointer);
         return NULL;
     }
 
@@ -79,7 +80,7 @@ OBJECTLIST* ScanDirectory(char* Directory)
         
     }
 
-
+    closedir(DirPointer);
     return List;
 }
 
