@@ -1,6 +1,7 @@
 #dobra wiec to dziala tak, to na dole(Projekt) robi glowny program, a że główny program ma szalone includy to wymaga pośrednich pliczków
 Projekt: main.c start.o Files.o
-	gcc main.c ./exeFiles/start.o ./exeFiles/Files.o -g -o ./exeFiles/programDeb 
+	gcc main.c ./exeFiles/start.o ./exeFiles/Files.o -g -o ./exeFiles/SynchDir
+	rm ./exeFiles/*.o
 
 #to na dole to jeden z posrednich pliczków, trzeba go zrobić z plik.h i plik.c
 start.o: ./headers/Start.h ./source/Start.c
