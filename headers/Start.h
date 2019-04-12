@@ -10,7 +10,7 @@
 #include<stdlib.h>
 #include <string.h>
 
-#define DEFAULT_TIME 3000000;// its 5 minutes
+#define DEFAULT_TIME 300;// its 5 minutes
 #define DEFAULT_SIZE 10;
 
 #ifndef CONFIG // ale to jest ogarniete- to trzeba przyzanc

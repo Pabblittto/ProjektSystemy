@@ -20,20 +20,24 @@
 
 
 
- int IsDeamonWorking=0;// 0 means false- t s waiting
- CONFIG Values;
+ volatile int IsDeamonWorking=0;// 0 means false- t s waiting
+int *pointerToDemon=(int*) &IsDeamonWorking;
+
+ volatile CONFIG Values;
+ const CONFIG * pointerOoValues=(CONFIG*) &Values;
+
 
  void Handler(int sig){
 
 printf("W srodku sygnalu \n");
-         if(IsDeamonWorking==0){
+         if(*pointerToDemon==0){
                 printf("odpalany jest sygnal \n");
-                 IsDeamonWorking=1;
+                 *pointerToDemon=1;
 
-                 printf("pierwszy katalog: %s\n drugi katalog: %s \n masa maksymalna: %d",Values.FirstDir,Values.SecondDir,Values.FileSize);
+                 printf("pierwszy katalog: %s\n drugi katalog: %s \n masa maksymalna: %d",(*pointerOoValues).FirstDir,Values.SecondDir,Values.FileSize);
                 CopyFiles(Values.FirstDir,Values.SecondDir,Values.deepSynch,Values.FileSize);
                 DeleteExtraFiles(Values.SecondDir,Values.FirstDir,Values.deepSynch);
-                IsDeamonWorking=0;
+                *pointerToDemon=0;
                 printf("a tu koniec sygnalu \n");
          }
  }
@@ -100,14 +104,14 @@ int main(int ArgNum,char* Arg[]) {
                 
 
                 if(IsDeamonWorking==0){
-
+                        printf("demon sie obudzil");
                 IsDeamonWorking=1;
                 CopyFiles(Values.FirstDir,Values.SecondDir,Values.deepSynch,Values.FileSize);
                 DeleteExtraFiles(Values.SecondDir,Values.FirstDir,Values.deepSynch);
                 IsDeamonWorking=0;
 
                 }
-
+                        printf("demon demon idzei spac");
                 sleep(Values.time_wait); 
         }
 
