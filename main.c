@@ -33,7 +33,8 @@ int * pointerOnFlag=(int*) &flag;
 
 int main(int ArgNum,char* Arg[]) {
 
-        
+        startLog(Arg,ArgNum);
+
         CONFIG Values;
         Values=CheckDirectories(ArgNum,Arg);
       
@@ -101,7 +102,8 @@ int main(int ArgNum,char* Arg[]) {
                 printf("demon poszedl spac\n");
                 sleep(Values.time_wait); 
         }
-
+        endLog();
         exit(EXIT_SUCCESS);
+        
    
 }
