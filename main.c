@@ -16,6 +16,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#define SIGTERM_MSG "SIGTERM received.\n"
 
 
 volatile int flag=0;
@@ -29,6 +30,24 @@ int * pointerOnFlag=(int*) &flag;
 
          *pointerOnFlag=1;// change flago to 1
  }
+
+void sig_term_handler(int signum, siginfo_t *info, void *ptr)
+{
+    write(STDERR_FILENO, SIGTERM_MSG, sizeof(SIGTERM_MSG));
+    endLog();
+    exit(EXIT_SUCCESS);
+}
+
+void catch_sigterm()
+{
+    static struct sigaction _sigact;
+
+    memset(&_sigact, 0, sizeof(_sigact));
+    _sigact.sa_sigaction = sig_term_handler;
+    _sigact.sa_flags = SA_SIGINFO;
+
+    sigaction(SIGTERM, &_sigact, NULL);
+}
 
 
 int main(int ArgNum,char* Arg[]) {
@@ -99,10 +118,13 @@ int main(int ArgNum,char* Arg[]) {
                 DeleteExtraFiles(Values.SecondDir,Values.FirstDir,Values.deepSynch);
                 signal(SIGUSR1,Handler);// so now signal can be pressed
 
+                //signal(SIGKILL, Handler); // so lets press and have fun
+                catch_sigterm();
+
                 printf("demon poszedl spac\n");
                 sleep(Values.time_wait); 
         }
-        endLog();
+        
         exit(EXIT_SUCCESS);
         
    

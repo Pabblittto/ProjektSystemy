@@ -29,14 +29,32 @@ void startLog(char *Args[], int ArgNum)
     }
     
     syslog (LOG_INFO, "Program started with parametrs: %s",str);
-    syslog (LOG_INFO, "Copying files from  %s to %s ...",Args[ArgNum-2], Args[ArgNum-1]);
+    syslog (LOG_INFO, "Comparing files between %s and %s ...",Args[ArgNum-2], Args[ArgNum-1]);
 
     closelog ();
 }
 
-void randomLog(char *filename){
+void copyLog(char *filename, char *directory){
     openlog ("SynchDirLog", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL1); // Open log connection
-    syslog (LOG_INFO, "Copying %s", filename);
+    syslog (LOG_INFO, "Copying file %s to %s", filename, directory);
+    closelog ();
+}
+
+void copyDirLog(char *directory){
+    openlog ("SynchDirLog", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL1); // Open log connection
+    syslog (LOG_INFO, "Creating directory %s",directory);
+    closelog ();
+}
+
+void deleteLog(char *filename, char type, char *path){
+    openlog ("SynchDirLog", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL1); // Open log connection
+    if(type == 'D')
+        syslog (LOG_INFO, "Deleteing directory %s from directory %s",path ,filename);
+    else
+    {
+        syslog (LOG_INFO, "Deleteing file %s from directory %s",path ,filename);
+    }
+    
     closelog ();
 }
 

@@ -1,5 +1,5 @@
 #include "../headers/Files.h"
-
+#include"../headers/Logs.h"
 
 #include<stdlib.h>
 #include<string.h>
@@ -11,7 +11,6 @@
 #include <unistd.h>
 #include<stdio.h>
 #include<dirent.h>
-
 
 #include <limits.h>
 #include <stdlib.h>
@@ -172,7 +171,9 @@ char* NameOfLastElement(char* path)
 }
 
 void CopyFileWithReadWrite(char* PathToFile,char* PathToDirectory,long int TimeOfModyfy)// path to directory says where this file should be created
-{                                                                               // if file should be replaced- do it
+{         
+    copyLog(PathToFile, PathToDirectory); // Logging                                                                     
+     // if file should be replaced- do it
     char* filename=NameOfLastElement(PathToFile);
     char* NewFilePath=calloc((strlen(PathToDirectory)+strlen(filename)+3),sizeof(char));// allock enought space
     strcat(NewFilePath,PathToDirectory);
@@ -204,6 +205,7 @@ void CopyFileWithReadWrite(char* PathToFile,char* PathToDirectory,long int TimeO
 
 void CopyFileWithMmap(char* PathToFile,char* PathToDirectory,long int TimeOfModyfy,int SizeOfFile)
 {
+    copyLog(PathToFile, PathToDirectory); // Logging 
     char* filename=NameOfLastElement(PathToFile);
     char* NewFilePath=calloc((strlen(PathToDirectory)+strlen(filename)+3),sizeof(char));// allock enought space
     strcat(NewFilePath,PathToDirectory);
@@ -239,16 +241,20 @@ void CopyFileWithMmap(char* PathToFile,char* PathToDirectory,long int TimeOfMody
 }
 
 void DeleteEverythingIDire(char* pathToDirectory){
-OBJECTLIST* allFilesInside= ScanDirectory(pathToDirectory);
+
+    OBJECTLIST* allFilesInside= ScanDirectory(pathToDirectory);
+    
     while(allFilesInside!=NULL){
 
-        if(allFilesInside->type==1){// is this is a directory
+        if(allFilesInside->type==1){// if this is a directory
+            deleteLog(pathToDirectory, 'D', allFilesInside->path); //logging
             DeleteEverythingIDire(allFilesInside->path);
             remove(allFilesInside->path);
         }
         else
-        {           // if ist normal file
-                remove(allFilesInside->path);
+        {           // if its normal file
+            deleteLog(pathToDirectory, 'F', allFilesInside->path); //loging
+            remove(allFilesInside->path);
         }
         
         allFilesInside=allFilesInside->next;
@@ -262,6 +268,7 @@ OBJECTLIST* allFilesInside= ScanDirectory(pathToDirectory);
 
 
 void DeleteExtraFiles(char* DirectoryToCheck_, char* TheChoosenOneDirectory_,int deepSynch ){
+    
     OBJECTLIST* DirectoryToCheck=ScanDirectory(DirectoryToCheck_);
     OBJECTLIST* TheChoosenOneDirectory=ScanDirectory(TheChoosenOneDirectory_);
 
@@ -273,7 +280,6 @@ void DeleteExtraFiles(char* DirectoryToCheck_, char* TheChoosenOneDirectory_,int
     while(DirectoryToCheck!=NULL){ // delete files in second directory if it dont exists in first
 
         if(DirectoryToCheck->type==1 && deepSynch==1){// if the element is a directory and recursive method is on
-
             tmp=Find(TheChoosenOneDirectory,DirectoryToCheck->path,DirectoryToCheck->type);// 
 
             if(tmp!=NULL){// if this directory exists 
@@ -291,6 +297,7 @@ void DeleteExtraFiles(char* DirectoryToCheck_, char* TheChoosenOneDirectory_,int
             tmp=Find(TheChoosenOneDirectory,DirectoryToCheck->path,DirectoryToCheck->type);// look for this file
 
                 if(tmp==NULL){// if this file does not exists in first directory- delete it
+                    deleteLog(DirectoryToCheck_, 'F', DirectoryToCheck->path);
                     remove(DirectoryToCheck->path);
                 }
         }
@@ -309,13 +316,13 @@ void DeleteExtraFiles(char* DirectoryToCheck_, char* TheChoosenOneDirectory_,int
 
 void CopyFiles(char* FirstDir,char* SecondDir,int IfDeepSynch,int FileSize)
 {
-OBJECTLIST* FilesInFirst=ScanDirectory(FirstDir);
-OBJECTLIST* FilesInSecond=ScanDirectory(SecondDir);
+    OBJECTLIST* FilesInFirst=ScanDirectory(FirstDir);
+    OBJECTLIST* FilesInSecond=ScanDirectory(SecondDir);
 
-OBJECTLIST* BeginningFirst=FilesInFirst; // pointers on the beginning of lists
-OBJECTLIST* BeginnigSecond=FilesInSecond;
+    OBJECTLIST* BeginningFirst=FilesInFirst; // pointers on the beginning of lists
+    OBJECTLIST* BeginnigSecond=FilesInSecond;
 
-OBJECTLIST* tmp=NULL;// tmp pointer for copying
+    OBJECTLIST* tmp=NULL;// tmp pointer for copying
 
 
     FilesInFirst=BeginningFirst;// move all pointer to the beginning of list
@@ -342,6 +349,7 @@ OBJECTLIST* tmp=NULL;// tmp pointer for copying
 
                 strcat(tmpName,NameOfLastElement(FilesInFirst->path));
                 mkdir(tmpName,S_IRWXU|S_IRWXG|S_IROTH);// create folder !!
+                copyDirLog(tmpName); //Logging
                 CopyFiles(FilesInFirst->path,tmpName,IfDeepSynch,FileSize);// if it does not exist- create it and create other  files nsde ths folder
             }
             
