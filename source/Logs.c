@@ -11,7 +11,6 @@ void startLog(char *Args[], int ArgNum)
 
     openlog ("SynchDirLog", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL1); // Open log connection
 
-    //uid_t uid = geteuid();
     struct passwd *pw = getpwuid(geteuid());
     char str[10];
     
@@ -28,7 +27,7 @@ void startLog(char *Args[], int ArgNum)
         strcat(str," ");
     }
     
-    syslog (LOG_INFO, "Program started with parametrs: %s",str);
+    syslog (LOG_NOTICE, "Program started with parametrs: %s",str);
     syslog (LOG_INFO, "Comparing files between %s and %s ...",Args[ArgNum-2], Args[ArgNum-1]);
 
     closelog ();
@@ -60,6 +59,6 @@ void deleteLog(char *filename, char type, char *path){
 
 void endLog(){
     openlog ("SynchDirLog", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL1); // Open log connection
-    syslog (LOG_NOTICE, "Closed ...");
+    syslog (LOG_NOTICE, "Closed !");
     closelog ();
 }

@@ -118,7 +118,7 @@ int main(int ArgNum,char* Arg[]) {
                 DeleteExtraFiles(Values.SecondDir,Values.FirstDir,Values.deepSynch);
                 signal(SIGUSR1,Handler);// so now signal can be pressed
 
-                //signal(SIGKILL, Handler); // so lets press and have fun
+                // so lets press and have fun
                 catch_sigterm();
 
                 printf("demon poszedl spac\n");
