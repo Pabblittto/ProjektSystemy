@@ -1,6 +1,6 @@
 #dobra wiec to dziala tak, to na dole(Projekt) robi glowny program, a że główny program ma szalone includy to wymaga pośrednich pliczków
-Projekt: main.c start.o Files.o
-	gcc main.c ./exeFiles/start.o ./exeFiles/Files.o -g -o ./exeFiles/SynchDir
+Projekt: main.c start.o Files.o Logs.o
+	gcc main.c ./exeFiles/start.o ./exeFiles/Files.o /exeFiles/Logs.o -g -o ./exeFiles/SynchDir
 	rm ./exeFiles/*.o
 
 #to na dole to jeden z posrednich pliczków, trzeba go zrobić z plik.h i plik.c
@@ -15,8 +15,8 @@ Files.o: ./headers/Files.h ./source/Files.c
 # to tak dla przykładu jak by sie dodwałao kolejnego includa (na przykład cos.h i cos.c)to trzeba napisać dodatkowe dwie liniki:
 
 
-#cos.o: ./headers/cos.h ./source/cos.c
-#	gcc ./source/cos.c -c -o ./exeFiles/cos.o
+Logs.o: ./headers/Logs.h ./source/Logs.c
+	gcc ./source/Logs.c -c -o ./exeFiles/Logs.o
 
 
 #AAA do projektu(tego na samej górze trzeba dodać żeby wyszło coś takiego:

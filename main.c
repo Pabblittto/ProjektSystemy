@@ -1,4 +1,4 @@
-#include"headers/test.h"// tu doajesz headera i ditara siema 
+#include"headers/Logs.h"// tu doajesz headera i ditara siema 
 #include"headers/Start.h"
 #include"headers/Files.h"
 
