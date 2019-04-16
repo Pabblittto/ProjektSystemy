@@ -16,7 +16,7 @@ Files.o: ./headers/Files.h ./source/Files.c
 
 
 Logs.o: ./headers/Logs.h ./source/Logs.c
-	gcc ./source/Logs.c -c -o ./exeFiles/Logs.o
+	gcc ./source/Logs.c -c -g -o ./exeFiles/Logs.o
 
 
 #AAA do projektu(tego na samej górze trzeba dodać żeby wyszło coś takiego:

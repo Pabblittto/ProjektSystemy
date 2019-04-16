@@ -246,8 +246,8 @@ void DeleteEverythingIDire(char* pathToDirectory){
     
     while(allFilesInside!=NULL){
 
-        if(allFilesInside->type==1){// if this is a directory
-            deleteLog(pathToDirectory, 'D', allFilesInside->path); //logging
+        if(allFilesInside->type==1){// if this is a directory    
+        deleteLog(pathToDirectory, 'D', allFilesInside->path); //logging  
             DeleteEverythingIDire(allFilesInside->path);
             remove(allFilesInside->path);
         }
@@ -287,8 +287,10 @@ void DeleteExtraFiles(char* DirectoryToCheck_, char* TheChoosenOneDirectory_,int
             }
             else
             {
+                deleteLog(DirectoryToCheck_, 'D', DirectoryToCheck->path); //logging
                 DeleteEverythingIDire(DirectoryToCheck->path);
                 remove(DirectoryToCheck->path);// delete this path
+
             }
             
 

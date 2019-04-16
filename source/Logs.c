@@ -45,13 +45,25 @@ void copyDirLog(char *directory){
     closelog ();
 }
 
+void DeamonState(int stan){
+    openlog ("SynchDirLog", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL1); // Open log connection
+    if(stan==0){// Deamon idzei lulu
+    syslog (LOG_INFO, "Deamon go to sleep");
+    }   
+    else
+    syslog (LOG_INFO, "Deamon wakes up");
+    closelog ();
+}
+
 void deleteLog(char *filename, char type, char *path){
     openlog ("SynchDirLog", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL1); // Open log connection
-    if(type == 'D')
-        syslog (LOG_INFO, "Deleteing directory %s from directory %s",path ,filename);
+    if(type == 'F')
+    {
+         syslog (LOG_INFO, "Deleteing file %s from directory %s",path ,filename);
+    }
     else
     {
-        syslog (LOG_INFO, "Deleteing file %s from directory %s",path ,filename);
+        syslog (LOG_INFO, "Deleteing directory %s from directory %s",path ,filename);
     }
     
     closelog ();

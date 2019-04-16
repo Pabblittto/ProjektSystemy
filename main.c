@@ -16,8 +16,8 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#define SIGTERM_MSG "SIGTERM received.\n"
 
+#define SIGTERM_MSG "SIGTERM received.\n"
 
 volatile int flag=0;
 int * pointerOnFlag=(int*) &flag;
@@ -61,12 +61,12 @@ int main(int ArgNum,char* Arg[]) {
 
         pid = fork();
         if (pid < 0) {
-                exit(EXIT_FAILURE);
+              exit(EXIT_FAILURE);
         }
 
 
         if (pid > 0) {
-                exit(EXIT_SUCCESS);
+               exit(EXIT_SUCCESS);
         }
 
         //////////////////////////////////////////////////////////////////////////
@@ -111,17 +111,17 @@ int main(int ArgNum,char* Arg[]) {
 
         while (1==1) {
                 
-                printf("demon obudzony\n");        
+    
                 signal(SIGUSR1,SIG_IGN);// ignore siganll becouse deamon will be working
-
+                        DeamonState(1);
                 CopyFiles(Values.FirstDir,Values.SecondDir,Values.deepSynch,Values.FileSize);
                 DeleteExtraFiles(Values.SecondDir,Values.FirstDir,Values.deepSynch);
                 signal(SIGUSR1,Handler);// so now signal can be pressed
 
                 // so lets press and have fun
                 catch_sigterm();
+                        DeamonState(0);
 
-                printf("demon poszedl spac\n");
                 sleep(Values.time_wait); 
         }
         
