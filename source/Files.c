@@ -24,7 +24,6 @@ OBJECTLIST* ScanDirectory(char* Directory)
     DIR* DirPointer=opendir(Directory);
 
     if(DirPointer==NULL){
-        printf("Fatal error: %s",strerror(errno));
         closedir(DirPointer);
         return NULL;
     }

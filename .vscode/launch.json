@@ -31,7 +31,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "/home/pabblo/Desktop/Projekt/SystemyProjekt/exeFiles/SynchDir",
-            "args": ["-t","500","-R","/home/pabblo/Desktop/jeden","/home/pabblo/Desktop/dwa"],
+            "args": ["-t","1","-R","/home/pabblo/Desktop/jeden","/home/pabblo/Desktop/dwa"],
             "stopAtEntry": false,
             "cwd": "/home/pabblo/Desktop/Projekt/SystemyProjekt/exeFiles/",
             "environment": [],

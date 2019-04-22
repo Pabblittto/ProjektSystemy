@@ -59,16 +59,26 @@ CONFIG CheckDirectories(int ArgNum,char* List[])
             if (firstDir=="")
             { // if the first directory is empty- save string to it
                 firstDir=List[i];
+                if(firstDir[0]=='.'){
+                    printf("First path need to be absolute!!\n");
+                    exit(1);
+                }
+
                 DIR* tmp=opendir(firstDir);
                 if (tmp==NULL) {// didnt found directory
                     printf("Wrong first directory path!\n");
                     printf("%s\n",strerror(errno));
                     exit(1);
                 }
+              
             }
              else if(seconDir=="")
              {
                 seconDir=List[i];
+                if(seconDir[0]=='.'){
+                    printf("Second path need to be absolute!!\n");
+                    exit(1);
+                }
                 DIR* tmp=opendir(seconDir);
                 if (tmp==NULL) {// didnt found directory
                     printf("Wrong second directory path!\n");
@@ -83,8 +93,6 @@ CONFIG CheckDirectories(int ArgNum,char* List[])
         }
 
     }// end for
-
-    // if everything was good - program reach this place
 
 
     structure=InitConfigurationStructure(time,size,synch,firstDir,seconDir);
@@ -106,12 +114,6 @@ int ISnumber(char*string){// returns 1 if string is long number
     return good;
 }
 
-//funkcje które trzeba zaimplementować :
-// -t x     - zmiana czasu spania deamona gdzie x to czas w sekundach
-// -R       -teraz trzeba też synchronizowac katalogi, normalnie to synchronizuje tylko pliczki- więc trzeba napisać 
-//                  funkcję, ktora synchronizuje pliczkiw katalogu a dzięki -r walnie się to rekurencją 
-// -S x     (Size)- x okresla od jakiego progu plik jest liczony jako duży plik- kiedy się wykorzystuje 
-//                      odpowiednią funkcję kopiującą (read/write lub mmap/write)
 CONFIG InitConfigurationStructure(int time,int SizeMB,int Synch,char* First,char* Second)
 {
     CONFIG tmp;

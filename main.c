@@ -51,12 +51,13 @@ void catch_sigterm()
 
 
 int main(int ArgNum,char* Arg[]) {
-
+   CONFIG Values;
+        Values=CheckDirectories(ArgNum,Arg);
         startLog(Arg,ArgNum);
 
-        CONFIG Values;
-        Values=CheckDirectories(ArgNum,Arg);
-      
+     
+        
+
         pid_t pid, MyPid;
 
         pid = fork();
@@ -68,7 +69,7 @@ int main(int ArgNum,char* Arg[]) {
         if (pid > 0) {
                exit(EXIT_SUCCESS);
         }
-
+        
         //////////////////////////////////////////////////////////////////////////
                 MyPid = getpid();
                 // code below save pd of the deamon and it can be read
@@ -102,8 +103,8 @@ int main(int ArgNum,char* Arg[]) {
         }
         
         close(STDIN_FILENO);
-       // close(STDOUT_FILENO);
-        //close(STDERR_FILENO);
+        close(STDOUT_FILENO);
+        close(STDERR_FILENO);
 
 
         signal(SIGUSR1,Handler);
